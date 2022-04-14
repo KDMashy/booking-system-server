@@ -17,6 +17,12 @@ export class Room extends BaseEntity {
     number: string;
 
     @Column({
+        type: 'varchar',
+        nullable: false
+    })
+    roomtype: string;
+
+    @Column({
         type: 'integer',
         nullable: false
     })

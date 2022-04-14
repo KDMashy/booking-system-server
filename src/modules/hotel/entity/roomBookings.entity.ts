@@ -17,15 +17,16 @@ export class RoomBooking extends BaseEntity {
     userid: number;
 
     @Column({
-        type: 'date',
+        type: 'varchar',
         nullable: false
     })
-    fromdate: Date;
+    fromdate: string;
 
     @Column({
-        type: 'date',
+        type: 'varchar',
+        nullable: false
     })
-    expiration: Date;
+    expiration: string;
 
     @Column({
         type: 'integer',
