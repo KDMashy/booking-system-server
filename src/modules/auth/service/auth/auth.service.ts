@@ -7,13 +7,10 @@ export class AuthService {
     constructor(private readonly userService: UserService) {}
 
     async validateUser(username:string, password: string) {
-        const userDB = await this.userService.FindUser(username);
-        console.log('userDB');
+        const userDB = await this.userService.FindUserByName(username);
         if(userDB){
             const matched = ComparePassword(password, userDB.password);
-            console.log('inside' + userDB);
             if (matched){
-                console.log('after' + userDB);
                 return userDB;
             }
             return null;

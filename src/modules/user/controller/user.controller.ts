@@ -9,7 +9,7 @@ export class UserController {
 
     @Get(':username')
     GetUser(@Param('username') username: string){
-        const user = this.userService.FindUser(username);
+        const user = this.userService.FindUserByName(username);
         return plainToClass(SerialisedUser, user);
     }
 

@@ -8,4 +8,7 @@
  npm install --save-dev @types/passport-local
  npm i bcrypt
  npm i -D @types/bcrypt
+ npm i express-session
+ npm i -D @types/express-session
+ npm i connect-typeorm
  npm run start
