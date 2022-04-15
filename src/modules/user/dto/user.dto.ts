@@ -3,12 +3,8 @@ import { Exclude } from 'class-transformer';
 
 export class CreateUserDto {
     @IsNotEmpty()
-    @Length(3, 30)
-    firstname: string;
-
-    @IsNotEmpty()
-    @Length(3, 30)
-    lastname: string;
+    @Length(4, 16)
+    username: string;
 
     @IsNotEmpty()
     @IsEmail()
@@ -20,16 +16,14 @@ export class CreateUserDto {
 
 export interface IUser {
     id?: number;
-    firstname: string;
-    lastname: string;
+    username: string;
     email: string;
     password: string;
 }
 
 export class SerialisedUser {
     id?: number;
-    firstname: string;
-    lastname: string;
+    username: string;
     email: string;
 
     @Exclude()

@@ -14,7 +14,7 @@ export class UserService {
 
     async CreateUser(user: CreateUserDto) {
         try {
-            const findUser = await this.userModel.findOne({ email: user.email});
+            const findUser = await this.userModel.findOne({ username: user.username});
             if (findUser){
                 throw new HttpException({
                     message: 'Cannot create user',
@@ -23,8 +23,7 @@ export class UserService {
             }
             const passw = EncodePassword(user.password);
             const newUser = await this.userModel.create({
-                firstname: user.firstname,
-                lastname: user.lastname,
+                username: user.username,
                 email: user.email,
                 password: passw,
             });
@@ -44,7 +43,7 @@ export class UserService {
         return this.userModel.find();
     }
 
-    async FindUser(email: string): Promise<User>{
-        return this.userModel.findOne({ email });
+    async FindUser(username: string): Promise<User>{
+        return this.userModel.findOne({ username });
     }
 }

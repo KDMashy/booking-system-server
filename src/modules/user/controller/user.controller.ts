@@ -1,14 +1,16 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
-import { CreateUserDto } from '../dto/user.dto';
+import { plainToClass } from 'class-transformer';
+import { CreateUserDto, SerialisedUser } from '../dto/user.dto';
 import { UserService } from '../service/user.service';
 
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Get(':email')
-    GetUser(@Param('email') email: string){
-        return this.userService.FindUser(email);
+    @Get(':username')
+    GetUser(@Param('username') username: string){
+        const user = this.userService.FindUser(username);
+        return plainToClass(SerialisedUser, user);
     }
 
     @Post('create')

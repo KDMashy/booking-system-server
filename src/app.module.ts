@@ -14,8 +14,8 @@ import { UserModule } from './modules/user/user.module';
     HotelModule,
     RoomModule,
     RoomBookingsModule,
-    UserModule,
     TypeOrmModule.forRoot(typeOrmConfig),
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
