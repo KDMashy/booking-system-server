@@ -19,6 +19,7 @@ export class CreateBookDto{
 }
 
 export interface BookRoom {
+    id?: number;
     roomid: number;
     userid: number;
     fromdate: Date;
@@ -27,6 +28,7 @@ export interface BookRoom {
 }
 
 export class SerialisedBook {
+    id?: number;
     roomid: number;
     fromdate: Date;
     expiration: Date;

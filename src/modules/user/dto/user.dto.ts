@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEmail, Length } from 'class-validator';
+import { IsNotEmpty, IsEmail, Length, isNotEmpty } from 'class-validator';
 import { Exclude } from 'class-transformer';
 
 export class CreateUserDto {
@@ -19,6 +19,7 @@ export class CreateUserDto {
 }
 
 export interface IUser {
+    id?: number;
     firstname: string;
     lastname: string;
     email: string;
@@ -26,6 +27,7 @@ export interface IUser {
 }
 
 export class SerialisedUser {
+    id?: number;
     firstname: string;
     lastname: string;
     email: string;

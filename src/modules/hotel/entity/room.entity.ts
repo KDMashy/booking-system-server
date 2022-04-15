@@ -14,7 +14,7 @@ export class Room extends BaseEntity {
         type: 'varchar',
         nullable: false
     })
-    number: string;
+    roomnumber: string;
 
     @Column({
         type: 'varchar',

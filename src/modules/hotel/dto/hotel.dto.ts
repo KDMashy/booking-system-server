@@ -10,3 +10,10 @@ export class CreateHotelDto{
     @IsNotEmpty()
     phone: string;
 }
+
+export interface IHotel {
+    id?: number;
+    name: string;
+    address: string;
+    phone: string;
+}
