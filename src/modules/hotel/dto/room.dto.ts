@@ -11,6 +11,9 @@ export class CreateRoomDto{
     roomtype: string;
 
     @IsNotEmpty()
+    description: string;
+
+    @IsNotEmpty()
     price: number;
 }
 
@@ -19,5 +22,6 @@ export interface IRoom {
     hotelid: number;
     roomnumber: string;
     roomtype: string;
+    description: string;
     price: number;
 }

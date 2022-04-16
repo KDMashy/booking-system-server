@@ -9,6 +9,9 @@ export class CreateHotelDto{
 
     @IsNotEmpty()
     phone: string;
+
+    @IsNotEmpty()
+    description: string;
 }
 
 export interface IHotel {
@@ -16,4 +19,5 @@ export interface IHotel {
     name: string;
     address: string;
     phone: string;
+    description: string;
 }

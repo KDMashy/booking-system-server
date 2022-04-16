@@ -10,6 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const sessionRepository = getRepository(SessionEntity);
   app.use(session({
+    name: 'BOOKING_SYSTEM_SESSION',
     secret: 'DefinietlyNotABookingServerSessionSecretThisIS',
     resave: false,
     saveUninitialized: false,

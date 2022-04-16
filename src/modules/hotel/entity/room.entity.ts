@@ -23,6 +23,12 @@ export class Room extends BaseEntity {
     roomtype: string;
 
     @Column({
+        type: 'varchar',
+        length: 1000,
+    })
+    description: string;
+
+    @Column({
         type: 'integer',
         nullable: false
     })

@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
-import { Request } from "express";
+import { Controller, Get, Post, Req, Request, Session, UseGuards } from "@nestjs/common";
 import { AuthService } from "../service/auth/auth.service";
-import { AuthenticatedGuard, LocalAuthGuard } from "../utils/local.guard";
+import { JwtAuthGuard } from "../utils/guards/jwt.guard";
+import { AuthenticatedGuard, LocalAuthGuard } from "../utils/guards/local.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -9,11 +9,20 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    async login() {}
+    async login(@Request() req) {
+        //return this.authService.login(req.user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('profile')
+    GetUserProfile(@Request() req){
+        return req.user;
+    }
 
     @UseGuards(AuthenticatedGuard)
     @Get('status')
-    async GetAuthStatus(@Req() req: Request){
-        return req.user;
+    async GetAuthStatus(@Session() session){
+        console.log(session);
+        //session.destroy();
     }
 }

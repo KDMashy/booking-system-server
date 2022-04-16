@@ -22,4 +22,10 @@ export class Hotel extends BaseEntity{
         nullable: false
     })
     phone: string;
+
+    @Column({
+        type: 'varchar',
+        length: 1000,
+    })
+    description: string;
 }
