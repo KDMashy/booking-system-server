@@ -1,19 +1,25 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { CreateRoomDto } from '../../dto/room.dto';
 import { RoomFilter } from '../../dto/roomFilter';
 import { RoomService } from '../../service/room/room.service';
 
-@Controller('hotel')
+@Controller('room')
 export class RoomController {
     constructor(private readonly roomService: RoomService) {}
 
-    @Get(':hotelname')
-    GetAllRoomByHotel(@Param('hotelname') hotel: string) {
-        return 'hotel szobák';
+    @Post('create')
+    CreateRoom(@Body() room: CreateRoomDto) {
+        return this.roomService.CreateRoom(room);
     }
 
-    @Get('room/:id')
+    @Get(':id')
+    GetAllRoomByHotel(@Param('id', ParseIntPipe) hotelid: number) {
+        return this.roomService.GetAllRoomsByHotelId(hotelid);
+    }
+
+    @Get('rooms/:id')
     GetOneRoomByHotel(@Param('id', ParseIntPipe) id: number) {
-        return 'hotel szoba';
+        return this.roomService.GetRoomById(id);
     }
 
     @Post('rooms/filter')

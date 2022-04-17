@@ -1,19 +1,16 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Session, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, Session, UseGuards } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { AuthenticatedGuard } from 'src/modules/auth/utils/guards/local.guard';
+import { RoomBookingsService } from 'src/modules/hotel/service/room-bookings/room-bookings.service';
 import { CreateUserDto, SerialisedUser } from '../dto/user.dto';
 import { UserService } from '../service/user.service';
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService) {}
-
-    /*@UseGuards(AuthenticatedGuard)
-    @Get(':username')
-    GetUser(@Param('username') username: string){
-        const user = this.userService.FindUserByName(username);
-        return plainToClass(SerialisedUser, user);
-    }*/
+    constructor(
+        private readonly userService: UserService,
+        private readonly bookingService: RoomBookingsService
+    ) {}
 
     @Post('register')
     CreateUser(@Body() user: CreateUserDto){
@@ -22,13 +19,13 @@ export class UserController {
 
     @UseGuards(AuthenticatedGuard)
     @Get('profile')
-    GetUserProfile(@Session() session) {
-        return session.user;
+    GetUserProfile(@Req() req) {
+        return req.user;
     }
 
     @UseGuards(AuthenticatedGuard)
     @Get('bookings')
-    GetUserBookingHistory(@Session() session) {
-        return 'foglalások';
+    GetUserBookingHistory(@Req() req) {
+        return this.bookingService.GetAllBookingByUser(req.user.id);
     }
 }

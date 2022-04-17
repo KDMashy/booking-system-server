@@ -17,7 +17,7 @@ export class UserService {
             const findUser = await this.userModel.findOne({ username: user.username});
             if (findUser){
                 throw new HttpException({
-                    message: 'Cannot create user',
+                    message: 'User already exists',
                     status: HttpStatus.CONFLICT,
                 }, HttpStatus.CONFLICT);
             }

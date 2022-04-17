@@ -4,6 +4,6 @@ export interface RoomFilter {
     sortbyprice?:boolean;
     type?: string;
     available?: boolean;
-    fromdate?: string;
-    untildate?: string;
+    fromdate?: Date;
+    untildate?: Date;
 }

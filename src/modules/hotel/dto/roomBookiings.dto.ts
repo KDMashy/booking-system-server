@@ -15,6 +15,9 @@ export class CreateBookDto{
     expiration: Date;
 
     @IsNotEmpty()
+    price: number;
+
+    @IsNotEmpty()
     reserved: number;
 }
 
@@ -24,6 +27,7 @@ export interface BookRoom {
     userid: number;
     fromdate: Date;
     expiration: Date;
+    price: number;
     reserved: number;
 }
 
@@ -32,6 +36,7 @@ export class SerialisedBook {
     roomid: number;
     fromdate: Date;
     expiration: Date;
+    price: number;
     reserved: number;
 
     @Exclude()
