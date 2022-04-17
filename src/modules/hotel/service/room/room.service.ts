@@ -2,15 +2,17 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRoomDto } from '../../dto/room.dto';
+import { RoomFilter } from '../../dto/roomFilter';
 import { Room } from '../../entity/room.entity';
 import { HotelService } from '../hotel/hotel.service';
+import { RoomBookingsService } from '../room-bookings/room-bookings.service';
 
 @Injectable()
 export class RoomService {
     constructor(
         @InjectRepository(Room)
         private roomModel: Repository<Room>,
-        private hotelService: HotelService
+        private hotelService: HotelService,
     ) {}
 
     async CreateRoom(room: CreateRoomDto) {

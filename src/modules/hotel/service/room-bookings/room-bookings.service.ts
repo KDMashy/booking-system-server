@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BookRoom, CreateBookDto } from '../../dto/roomBookiings.dto';
+import { RoomFilter } from '../../dto/roomFilter';
+import { Room } from '../../entity/room.entity';
 import { RoomBooking } from '../../entity/roomBookings.entity';
 import { HotelService } from '../hotel/hotel.service';
 import { RoomService } from '../room/room.service';
@@ -61,7 +63,7 @@ export class RoomBookingsService {
     }
 
     async DeleteBooking(booking: BookRoom){
-        const deleteBooking = await this.bookModel.update(booking.id, booking);
+        await this.bookModel.delete(booking.id);
         return HttpStatus.OK;
     }
 
@@ -107,8 +109,71 @@ export class RoomBookingsService {
         });
         if (foundReservation == 0){
             return 1;
-        } else {
-            return 0;
         }
+        return 0;
+        
+    }
+
+    async FilterRooms(filter: RoomFilter, hotelid: number){
+        const rooms: Room[] = await this.roomService.GetAllRoomsByHotelId(hotelid);
+        var popped: boolean = false;
+        for (let i = 0; i < rooms.length; i++) {
+            if(filter.maxprice && filter.maxprice < rooms[i].price){
+                rooms.splice(i - 1, 1);
+                popped = true;
+            }
+            if(filter.fromdate && filter.untildate &&
+                !isNaN(new Date(filter.fromdate).getTime()) && !isNaN(new Date(filter.untildate).getTime()) &&
+                popped == false
+            ){
+                const reservedRoom = await this.CheckIntervalAvailable(
+                    rooms[i].id,
+                    new Date(filter.fromdate),
+                    new Date(filter.untildate) 
+                );
+                if(reservedRoom == 1){
+                    rooms.splice(i - 1, 1);
+                    popped = true;
+                }
+            }
+            if(
+                filter.available == true && popped == false &&
+                !isNaN(new Date(filter.fromdate).getTime()) && !isNaN(new Date(filter.untildate).getTime())
+            ){
+                var tomorrowDate = new Date();
+                tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+                const reservedRoom = await this.CheckIntervalAvailable(
+                    rooms[i].id,
+                    new Date(),
+                    tomorrowDate
+                );
+                if(reservedRoom == 1){
+                    rooms.splice(i - 1, 1);
+                    popped = true;
+                }
+            }
+        }
+        if (filter.sortbyprice === 'igen'){
+            for (let j = 0; j < rooms.length - 1; j++){
+                for (let i = j + 1; i < rooms.length; i++){
+                    if (rooms[j].price > rooms[i].price){
+                        var x = rooms[j];
+                        rooms[j] = rooms[i];
+                        rooms[i] = x;
+                    }
+                }
+            }
+        } else if (filter.sortbyprice === 'nem') {
+            for (let j = 0; j < rooms.length - 1; j++){
+                for (let i = j + 1; i < rooms.length; i++){
+                    if (rooms[j].price < rooms[i].price){
+                        var x = rooms[j];
+                        rooms[j] = rooms[i];
+                        rooms[i] = x;
+                    }
+                }
+            }
+        }
+        return rooms;
     }
 }

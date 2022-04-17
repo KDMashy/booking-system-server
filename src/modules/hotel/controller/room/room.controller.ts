@@ -21,10 +21,4 @@ export class RoomController {
     GetOneRoomByHotel(@Param('id', ParseIntPipe) id: number) {
         return this.roomService.GetRoomById(id);
     }
-
-    @Post('rooms/filter')
-    FilterRooms(@Body() filter: RoomFilter) {
-        return 'filterelt szobák';
-    }
-
 }
