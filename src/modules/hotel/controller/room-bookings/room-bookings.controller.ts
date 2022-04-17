@@ -13,7 +13,7 @@ export class RoomBookingsController {
         @Request() req,
         @Body() booking: CreateBookDto
     ) {
-        return this.roomBookingService.CreateBooking(booking);
+        return this.roomBookingService.CreateBooking(booking, req.user.id);
     }
 
     @UseGuards(AuthenticatedGuard)

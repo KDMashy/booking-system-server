@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Room } from "./room.entity";
 @Entity('booked')
 export class RoomBooking extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -8,13 +9,13 @@ export class RoomBooking extends BaseEntity {
         type: 'integer',
         nullable: false
     })
-    roomid: number;
+    userid: number;
 
     @Column({
-        type: 'integer',
+        type: 'varchar',
         nullable: false
     })
-    userid: number;
+    hotelname: string
 
     @Column({
         type: 'date',
@@ -39,4 +40,7 @@ export class RoomBooking extends BaseEntity {
         default: 1,
     })
     reserved: number;
+
+    @ManyToOne(() => Room, (room) => room.bookings)
+    roomid: number;
 }

@@ -5,8 +5,9 @@ export class CreateBookDto{
     @IsNotEmpty()
     roomid: number;
     
-    @IsNotEmpty()
-    userid: number;
+    userid?: number;
+
+    hotelname?: string;
 
     @IsNotEmpty()
     fromdate: Date;
@@ -24,7 +25,8 @@ export class CreateBookDto{
 export interface BookRoom {
     id?: number;
     roomid: number;
-    userid: number;
+    userid?: number;
+    hotelname?: string;
     fromdate: Date;
     expiration: Date;
     price: number;
@@ -34,6 +36,7 @@ export interface BookRoom {
 export class SerialisedBook {
     id?: number;
     roomid: number;
+    hotelname?: string;
     fromdate: Date;
     expiration: Date;
     price: number;

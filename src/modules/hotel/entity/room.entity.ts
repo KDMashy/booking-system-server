@@ -1,4 +1,6 @@
-import { BaseEntity, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Hotel } from "./hotel.entity";
+import { RoomBooking } from "./roomBookings.entity";
 @Entity('rooms')
 export class Room extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -33,4 +35,7 @@ export class Room extends BaseEntity {
         nullable: false
     })
     price: number;
+
+    @OneToMany(() => RoomBooking, (booking) => booking.roomid)
+    bookings: RoomBooking[];
 }

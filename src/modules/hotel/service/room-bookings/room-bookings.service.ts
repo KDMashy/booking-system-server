@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BookRoom, CreateBookDto } from '../../dto/roomBookiings.dto';
 import { RoomBooking } from '../../entity/roomBookings.entity';
+import { HotelService } from '../hotel/hotel.service';
 import { RoomService } from '../room/room.service';
 
 @Injectable()
@@ -11,9 +12,10 @@ export class RoomBookingsService {
         @InjectRepository(RoomBooking)
         private bookModel: Repository<RoomBooking>,
         private roomService: RoomService,
+        private hotelService: HotelService
     ) {}
 
-    async CreateBooking(book: CreateBookDto){
+    async CreateBooking(book: CreateBookDto, userid: number){
         const findRoom = await this.roomService.GetRoomById(book.roomid);
         if (!findRoom) {
             throw new HttpException({
@@ -45,18 +47,21 @@ export class RoomBookingsService {
                 status: HttpStatus.CONFLICT,
             }, HttpStatus.CONFLICT);
         }
+        const findHotel = await this.hotelService.FindHotelById(findRoom.hotelid);
+        book.hotelname = findHotel.name;
         book.fromdate = fromD;
         book.expiration = toD;
         var dayDiff = toD.getTime() - fromD.getTime();
         var days = Math.ceil(dayDiff / (1000 * 3600 * 24));
         book.price *= days;
+        book.userid = userid;
         const booking = await this.bookModel.create(book);
         booking.save();
         return booking;
     }
 
     async DeleteBooking(booking: BookRoom){
-        const deletUser = await this.bookModel.update(booking.id, booking);
+        const deleteBooking = await this.bookModel.update(booking.id, booking);
         return HttpStatus.OK;
     }
 
@@ -65,11 +70,18 @@ export class RoomBookingsService {
     }
 
     async GetAllBookingByUser(userid: number){
-        return await this.bookModel.find({ where: { userid: userid}});
+        var history: RoomBooking[] = await this.bookModel.find({
+            where: {userid: userid},
+            relations: ['roomid'],
+        });
+        
+        return history;
     }
 
     async CheckIntervalAvailable(roomid: number, fromdate: Date, expires: Date){
-        var bookings: BookRoom[] = await this.bookModel.find({ where: {roomid: roomid}});
+        var bookings: BookRoom[] = await this.bookModel.find({ 
+            where: {roomid: roomid},
+        });
         var foundReservation = 0;
         bookings.forEach(book => {
             var bookFromDate = new Date(book.fromdate);
@@ -99,9 +111,4 @@ export class RoomBookingsService {
             return 0;
         }
     }
-}
-
-export interface IDateChecker {
-    fromdate: Date;
-    expires: Date;
 }

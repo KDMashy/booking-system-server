@@ -29,8 +29,8 @@ export class RoomService {
                     status: HttpStatus.CONFLICT,
                 }, HttpStatus.CONFLICT);
             }
-            const nemRoom = await this.roomModel.create( room );
-            nemRoom.save();
+            const newRoom = await this.roomModel.create( room );
+            newRoom.save();
             return HttpStatus.CREATED;
         } catch (err){
             return err;
