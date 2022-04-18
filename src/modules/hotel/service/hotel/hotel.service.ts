@@ -12,7 +12,11 @@ export class HotelService {
     ) {}
 
     async CreateHotel(hotel: CreateHotelDto) {
-        try {
+        if(
+            hotel.name.length > 0 &&
+            hotel.address.length > 0 &&
+            hotel.description.length > 0
+        ){
             const findHotel = await this.hotelModel.findOne({ name: hotel.name });
             if (findHotel) {
                 throw new HttpException({
@@ -23,8 +27,11 @@ export class HotelService {
             const newHotel = await this.hotelModel.create( hotel );
             newHotel.save();
             return HttpStatus.CREATED;
-        } catch (err){
-            return HttpStatus.CONFLICT;
+        } else {
+            throw new HttpException({
+                message: 'Hotel cant be created, invalid input',
+                status: HttpStatus.CONFLICT,
+            }, HttpStatus.CONFLICT);
         }
     }
 
@@ -46,8 +53,8 @@ export class HotelService {
         if (!findHotel) {
             throw new HttpException({
                 message: 'Hotel does not exist',
-                status: HttpStatus.CONFLICT,
-            }, HttpStatus.CONFLICT);
+                status: HttpStatus.BAD_REQUEST,
+            }, HttpStatus.BAD_REQUEST);
         }
         return findHotel 
     }

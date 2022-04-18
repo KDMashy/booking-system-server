@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { serializeUser } from 'passport';
 import { AuthenticatedGuard } from 'src/modules/auth/utils/guards/local.guard';
@@ -34,16 +34,11 @@ export class UserController {
     }
 
     @UseGuards(AuthenticatedGuard)
-    @Get('delete/:id')
+    @Delete('delete')
     @HttpCode(202)
     DeleteUserById(
         @Req() req,
-        @Param('id', ParseIntPipe) id: number
     ) {
-        if(req.user.id == id){
-            return this.userService.DeleteUser(id);
-        } else {
-            return HttpStatus.CONFLICT;
-        }
+        return this.userService.DeleteUser(req.user.id);
     }
 }

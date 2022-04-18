@@ -14,7 +14,12 @@ export class RoomService {
     ) {}
 
     async CreateRoom(room: CreateRoomDto) {
-        try {
+        if(
+            room.description.length > 0 &&
+            room.price > 0 &&
+            room.roomnumber.length > 0 &&
+            room.roomtype.length > 0
+        ){
             const findRoom = await this.roomModel.findOne({ roomnumber: room.roomnumber });
             if (findRoom) {
                 throw new HttpException({
@@ -32,8 +37,11 @@ export class RoomService {
             const newRoom = await this.roomModel.create( room );
             newRoom.save();
             return HttpStatus.CREATED;
-        } catch (err){
-            return HttpStatus.BAD_REQUEST;
+        } else {
+            throw new HttpException({
+                message: 'Room cant be created, invalid data given',
+                status: HttpStatus.CONFLICT,
+            }, HttpStatus.CONFLICT);
         }
     }
 

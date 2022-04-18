@@ -1,4 +1,5 @@
 import { Body, Controller, Get, HttpCode, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { AuthenticatedGuard } from 'src/modules/auth/utils/guards/local.guard';
 import { CreateRoomDto } from '../../dto/room.dto';
 import { RoomService } from '../../service/room/room.service';
 
@@ -6,6 +7,7 @@ import { RoomService } from '../../service/room/room.service';
 export class RoomController {
     constructor(private readonly roomService: RoomService) {}
 
+    @UseGuards(AuthenticatedGuard)
     @Post('room/create')
     @HttpCode(201)
     CreateRoom(@Body() room: CreateRoomDto) {

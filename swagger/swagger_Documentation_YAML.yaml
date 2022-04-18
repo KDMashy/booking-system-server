@@ -1,0 +1,469 @@
+swagger: "2.0"
+info:
+  description: "This is a booking service for hotels to arrange room bookings better."
+  version: "1.0.0"
+  title: "Booking service"
+host: "booking.service"
+tags:
+- name: "hotel"
+  description: "Hotel informations"
+- name: "room"
+  description: "Room informations"
+- name: "booking"
+  description: "Booking operations"
+- name: "auth"
+  description: "Authentication for login, sessions"
+- name: "user"
+  description: "Operations about user"
+schemes:
+- "https"
+- "http"
+paths:
+  /hotel/create:
+    post:
+      tags:
+      - "hotel"
+      summary: "Creates a new hotel"
+      description: "Needs Authenticated user to do it"
+      operationId: "createHotel"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Hotel object for the database"
+        required: true
+        schema:
+          $ref: "#/definitions/Hotel"
+      responses:
+        "201":
+          description: "Created hotel"
+        "409":
+          description: "Already exists or data given is invalid"
+  /hotel/hotels:
+    get:
+      tags:
+      - "hotel"
+      summary: "Shows all hotel from database"
+      description: "Hotel list"
+      operationId: "findHotels"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Hotel object for the database"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Hotel"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hotel"
+  /hotel/{hotelId}:
+    get:
+      tags:
+      - "hotel"
+      summary: "Get a hotel by ID"
+      description: "Returns a hotel object"
+      operationId: "getHotelById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "hotelId"
+        description: "ID of hotel to find in URL"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Hotel"
+        "404":
+          description: "Hotel not found"
+  /room/create:
+    post:
+      tags:
+      - "room"
+      summary: "Creates a new room"
+      description: "Needs Authenticated user to do it"
+      operationId: "createRoom"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Room object for the database"
+        required: true
+        schema:
+          $ref: "#/definitions/Room"
+      responses:
+        "201":
+          description: "Created room"
+        "409":
+          description: "Already exists or data given is invalid"
+  /room/{hotelId}:
+    get:
+      tags:
+      - "room"
+      summary: "Get rooms by hotel ID"
+      description: "Returns an array of room objects for the chosen Hotel"
+      operationId: "getRoomsByHotelId"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "hotelId"
+        description: "ID of hotel to find in URL"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Hotel"
+        "404":
+          description: "Hotel not found"
+  /rooms/{roomId}:
+    get:
+      tags:
+      - "room"
+      summary: "Get a room by ID"
+      description: "Returns a room object"
+      operationId: "getRoomById"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "roomId"
+        description: "ID of room to find in URL"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Hotel"
+        "404":
+          description: "Hotel not found"
+  /rooms/filter/{hotelId}:
+    post:
+      tags:
+      - "room"
+      summary: "Get a room by hotel ID filtered"
+      description: "Returns an array of room objects for the chosen Hotel"
+      operationId: "getRoomsFiltered"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "hotelId"
+        description: "ID of hotel to find in URL"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "filter"
+        in: "body"
+        description: "filter options, all options are optional"
+        schema:
+          type: "object"
+          properties:
+            maxprice:
+              type: "integer"
+              format: "int64"
+            sortbyprice:
+              type: "boolean"
+            available:
+              type: "boolean"
+            fromdate:
+              type: "string"
+              format: "date-time"
+            untildate:
+              type: "string"
+              format: "date-time"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Room"
+  /booking/book:
+    post:
+      tags:
+      - "booking"
+      summary: "Create booking for a room"
+      description: "Used to create a book for a room in a date interval, needs Authenticated user to do it"
+      operationId: "createBook"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created RoomBooking object"
+        required: true
+        schema:
+          $ref: "#/definitions/RoomBooking"
+      responses:
+        default:
+          description: "successful operation"
+  /booking/delete:
+    delete:
+      tags:
+      - "booking"
+      summary: "Delete booking for a room by user"
+      description: "Used to delete a room booking by user, needs Authenticated user to do it, doesnt need room data for removing the booking, also removing here means reserved value changes from 1 to 0 (GDPR)"
+      operationId: "deleteBook"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created RoomBooking object"
+        required: true
+        schema:
+          $ref: "#/definitions/RoomBooking"
+      responses:
+        "200":
+          description: "successful operation"
+        "409":
+          description: "Couldnt remove booking"
+  /auth/login:
+    post:
+      tags:
+      - "auth"
+      summary: "Loggs in the user into a session"
+      description: "Puts a logged in user into session, can generate jwt token"
+      operationId: "loginUserToSession"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "login"
+        in: "body"
+        description: "Data to validate user"
+        schema:
+          type: "object"
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: "string"
+            password:
+              type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+  /auth/logout:
+    get:
+      tags:
+      - "auth"
+      summary: "Destroys session"
+      description: "Needs Authenticated user to do it"
+      operationId: "destroySession"
+      responses:
+        "200":
+          description: "successful operation"
+  /user/register:
+    post:
+      tags:
+      - "user"
+      summary: "Create user"
+      description: "Used to registration"
+      operationId: "createUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+  /user/profile:
+    get:
+      tags:
+      - "user"
+      summary: "Gets the profile of the user"
+      description: "Needs Authenticated user to do it"
+      operationId: "getProfile"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User profile"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+  /user/bookings:
+    get:
+      tags:
+      - "user"
+      summary: "Gets the list of bookings"
+      description: "Needs Authenticated user to do it"
+      operationId: "getUserBookings"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "List of booking objects"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/RoomBooking"
+      responses:
+        default:
+          description: "successful operation"
+  /user/delete:
+    delete:
+      tags:
+      - "user"
+      summary: "Delete user from database"
+      description: "Needs Authenticated user to do it"
+      operationId: "deleteUser"
+      responses:
+        "200":
+          description: "successful operation"
+        "409":
+          description: "Couldnt delete user from database"
+definitions:
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+        format: "varchar"
+      email:
+        type: "string"
+        format: "varchar"
+      password:
+        type: "string"
+        format: "varchar"
+    xml:
+      name: "User"
+  Hotel:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        format: "varchar"
+      address: 
+        type: "string"
+        format: "varchar"
+      phone:
+        type: "integer"
+        format: "int64"
+      description:
+        type: "string"
+        format: "varchar"
+    xml:
+      name: "Hotel"
+  Room:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      hotelid:
+        type: "integer"
+        format: "int64"
+      roomnumber:
+        type: "string"
+        format: "varchar"
+      roomtype:
+        type: "string"
+        format: "varchar"
+      description:
+        type: "string"
+        format: "varchar"
+      price:
+        type: "integer"
+        format: "int64"
+    xml:
+      name: "Room"
+  RoomBooking:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      userid:
+        type: "integer"
+        format: "int64"
+      hotelname:
+        type: "string"
+        format: "varchar"
+      fromdate:
+        type: "string"
+        format: "date-time"
+      expiration:
+        type: "string"
+        format: "date-time"
+      price:
+        type: "integer"
+        format: "int64"
+      reserved:
+        type: "integer"
+        format: "int64"
+      roomid:
+        type: "array"
+        xml:
+          name: "id"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Room"
+    xml:
+      name: "RoomBooking"
+  SessionEntity:
+    type: "object"
+    properties:
+      expiredAt:
+        type: "integer"
+        format: "bigint"
+      id:
+        type: "string"
+        format: "varchar"
+      json:
+        type: "string"
+        format: "text"
