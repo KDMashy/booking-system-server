@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, Session, UseGuards } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from 'src/modules/auth/utils/guards/local.guard';
 import { RoomBookingsService } from 'src/modules/hotel/service/room-bookings/room-bookings.service';
-import { CreateUserDto, SerialisedUser } from '../dto/user.dto';
+import { CreateUserDto } from '../dto/user.dto';
 import { UserService } from '../service/user.service';
 
 @Controller('user')
@@ -13,19 +12,36 @@ export class UserController {
     ) {}
 
     @Post('register')
+    @HttpCode(201)
     CreateUser(@Body() user: CreateUserDto){
         return this.userService.CreateUser(user);
     }
 
     @UseGuards(AuthenticatedGuard)
     @Get('profile')
+    @HttpCode(200)
     GetUserProfile(@Req() req) {
         return req.user;
     }
 
     @UseGuards(AuthenticatedGuard)
     @Get('bookings')
+    @HttpCode(202)
     GetUserBookingHistory(@Req() req) {
         return this.bookingService.GetAllBookingByUser(req.user.id);
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Get('delete/:id')
+    @HttpCode(202)
+    DeleteUserById(
+        @Req() req,
+        @Param('id', ParseIntPipe) id: number
+    ) {
+        if(req.user.id == id){
+            return this.userService.DeleteUser(id);
+        } else {
+            return HttpStatus.CONFLICT;
+        }
     }
 }

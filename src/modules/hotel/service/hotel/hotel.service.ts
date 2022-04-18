@@ -24,7 +24,16 @@ export class HotelService {
             newHotel.save();
             return HttpStatus.CREATED;
         } catch (err){
-            return err;
+            return HttpStatus.CONFLICT;
+        }
+    }
+
+    async DeleteHotelById(hotelid: number){
+        try{
+            await this.hotelModel.delete(hotelid);
+            return HttpStatus.OK;
+        } catch(err){
+            return HttpStatus.CONFLICT;
         }
     }
 
@@ -44,6 +53,10 @@ export class HotelService {
     }
 
     async FindHotelByName(name: string){
-        return await this.hotelModel.findOne({ name: name });
+        try {
+            return await this.hotelModel.findOne({ name: name });
+        } catch (err){
+            return HttpStatus.NOT_FOUND;
+        }
     }
 }

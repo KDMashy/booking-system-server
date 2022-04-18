@@ -9,20 +9,11 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    async login(@Request() req) {
-        //return this.authService.login(req.user);
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Get('profile')
-    GetUserProfile(@Request() req){
-        return req.user;
-    }
+    async login(@Request() req) {}
 
     @UseGuards(AuthenticatedGuard)
-    @Get('status')
+    @Get('logout')
     async GetAuthStatus(@Session() session){
-        console.log(session);
-        //session.destroy();
+        session.destroy();
     }
 }

@@ -1,6 +1,6 @@
 export interface RoomFilter {
     maxprice?: number;
-    sortbyprice?:string;
+    sortbyprice?:boolean;
     available?: boolean;
     fromdate?: Date;
     untildate?: Date;

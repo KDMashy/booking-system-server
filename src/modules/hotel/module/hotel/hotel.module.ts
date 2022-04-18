@@ -5,7 +5,9 @@ import { Hotel } from '../../entity/hotel.entity';
 import { HotelService } from '../../service/hotel/hotel.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Hotel])],
+    imports: [
+        TypeOrmModule.forFeature([Hotel]),
+    ],
     controllers: [HotelController],
     providers: [HotelService],
     exports: [HotelService]
