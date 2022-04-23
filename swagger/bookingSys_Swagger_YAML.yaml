@@ -453,6 +453,13 @@ definitions:
           wrapped: true
         items:
           $ref: "#/definitions/Room"
+      hotelid:
+        type: "array"
+        xml:
+          name: "id"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Hotel"
     xml:
       name: "RoomBooking"
   SessionEntity:

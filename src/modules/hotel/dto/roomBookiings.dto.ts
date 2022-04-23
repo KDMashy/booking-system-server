@@ -7,7 +7,7 @@ export class CreateBookDto{
     
     userid?: number;
 
-    hotelname?: string;
+    hotelid?: number;
 
     @IsNotEmpty()
     fromdate: Date;

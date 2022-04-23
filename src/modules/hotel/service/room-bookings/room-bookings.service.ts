@@ -18,52 +18,48 @@ export class RoomBookingsService {
     ) {}
 
     async CreateBooking(book: CreateBookDto, userid: number){
-        try {
-            const findRoom = await this.roomService.GetRoomById(book.roomid);
-            if (!findRoom) {
-                throw new HttpException({
-                    message: 'Room does not exist',
-                    status: HttpStatus.CONFLICT,
-                }, HttpStatus.CONFLICT);
-            }
-            const current = new Date();
-            const fromD = new Date(book.fromdate);
-            const toD = new Date(book.expiration);
-            const checkIfAvailable = await this.CheckIntervalAvailable(findRoom.id, fromD, toD);
-            if (
-                current > fromD ||
-                current.getTime() === fromD.getTime() ||
-                current > toD ||
-                current.getTime() === toD.getTime() ||
-                toD.getTime() < fromD.getTime() ||
-                fromD.getTime() === toD.getTime() ||
-                checkIfAvailable == 0
-            ) {
-                throw new HttpException({
-                    message: 'Cant book for this interval',
-                    status: HttpStatus.CONFLICT,
-                }, HttpStatus.CONFLICT);
-            }
-            if (isNaN(fromD.getTime()) || isNaN(toD.getTime())){
-                throw new HttpException({
-                    message: 'Invalid date given',
-                    status: HttpStatus.CONFLICT,
-                }, HttpStatus.CONFLICT);
-            }
-            const findHotel = await this.hotelService.FindHotelById(findRoom.hotelid);
-            book.hotelname = findHotel.name;
-            book.fromdate = fromD;
-            book.expiration = toD;
-            var dayDiff = toD.getTime() - fromD.getTime();
-            var days = Math.ceil(dayDiff / (1000 * 3600 * 24));
-            book.price *= days;
-            book.userid = userid;
-            const booking = await this.bookModel.create(book);
-            booking.save();
-            return booking;
-        } catch(err){
-            return HttpStatus.CONFLICT;
+        const findRoom = await this.roomService.GetRoomById(book.roomid);
+        if (!findRoom) {
+            throw new HttpException({
+                message: 'Room does not exist',
+                status: HttpStatus.CONFLICT,
+            }, HttpStatus.CONFLICT);
         }
+        const current = new Date();
+        const fromD = new Date(book.fromdate);
+        const toD = new Date(book.expiration);
+        const checkIfAvailable = await this.CheckIntervalAvailable(findRoom.id, fromD, toD);
+        if (
+            current > fromD ||
+            current.getTime() === fromD.getTime() ||
+            current > toD ||
+            current.getTime() === toD.getTime() ||
+            toD.getTime() < fromD.getTime() ||
+            fromD.getTime() === toD.getTime() ||
+            checkIfAvailable == 0
+        ) {
+            throw new HttpException({
+                message: 'Cant book for this interval',
+                status: HttpStatus.CONFLICT,
+            }, HttpStatus.CONFLICT);
+        }
+        if (isNaN(fromD.getTime()) || isNaN(toD.getTime())){
+            throw new HttpException({
+                message: 'Invalid date given',
+                status: HttpStatus.CONFLICT,
+            }, HttpStatus.CONFLICT);
+        }
+        const findHotel = await this.hotelService.FindHotelById(findRoom.hotelid);
+        book.hotelid = findHotel.id;
+        book.fromdate = fromD;
+        book.expiration = toD;
+        var dayDiff = toD.getTime() - fromD.getTime();
+        var days = Math.ceil(dayDiff / (1000 * 3600 * 24));
+        book.price *= days;
+        book.userid = userid;
+        const booking = await this.bookModel.create(book);
+        booking.save();
+        return booking;
     }
 
     async DeleteBooking(booking: BookRoom){
@@ -90,7 +86,7 @@ export class RoomBookingsService {
         try {
             var history: RoomBooking[] = await this.bookModel.find({
                 where: {userid: userid},
-                relations: ['roomid'],
+                relations: ['roomid','hotelid'],
             });
             return history;
         } catch(err){
