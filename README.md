@@ -25,3 +25,6 @@
  npm install --save-dev @types/passport-jwt
  
  npm i --save @nestjs/config
+
+ # run build (?)
+ nest start BookingSystem
