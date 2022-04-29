@@ -344,7 +344,7 @@
       }
     },
     "/booking/delete": {
-      "delete": {
+      "put": {
         "tags": [
           "booking"
         ],

@@ -229,7 +229,7 @@ paths:
         default:
           description: "successful operation"
   /booking/delete:
-    delete:
+    put:
       tags:
       - "booking"
       summary: "Delete booking for a room by user"

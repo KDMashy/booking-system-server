@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, HttpCode, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, Param, ParseIntPipe, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from 'src/modules/auth/utils/guards/local.guard';
 import { BookRoom, CreateBookDto } from '../../dto/roomBookiings.dto';
 import { RoomFilter } from '../../dto/roomFilter';
@@ -19,7 +19,7 @@ export class RoomBookingsController {
     }
 
     @UseGuards(AuthenticatedGuard)
-    @Delete('booking/delete')
+    @Put('booking/delete')
     @HttpCode(202)
     DeleteBooking(
         @Body() booking: BookRoom
