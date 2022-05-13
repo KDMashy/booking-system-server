@@ -86,4 +86,13 @@ export class UserService {
     async FindUserById(id: number) {
         return this.userModel.findOne(id);
     }
+
+    GetProfile(user: User){
+        var serialized = {
+            id: user.id,
+            username: user.username,
+            email: user.email
+        };
+        return serialized;
+    }
 }

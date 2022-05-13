@@ -1,6 +1,4 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { serializeUser } from 'passport';
 import { AuthenticatedGuard } from 'src/modules/auth/utils/guards/local.guard';
 import { RoomBookingsService } from 'src/modules/hotel/service/room-bookings/room-bookings.service';
 import { CreateUserDto } from '../dto/user.dto';
@@ -23,7 +21,7 @@ export class UserController {
     @Get('profile')
     @HttpCode(200)
     GetUserProfile(@Req() req) {
-        return plainToClass(req.user, serializeUser);
+        return this.userService.GetProfile(req.user);
     }
 
     @UseGuards(AuthenticatedGuard)
