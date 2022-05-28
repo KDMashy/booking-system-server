@@ -11,29 +11,29 @@ export class RoomBookingsController {
     @UseGuards(AuthenticatedGuard)
     @Post('booking/book')
     @HttpCode(201)
-    CreateBooking(
+    createBooking(
         @Request() req,
         @Body() booking: CreateBookDto
     ) {
-        return this.roomBookingService.CreateBooking(booking, req.user.id);
+        return this.roomBookingService.createBooking(booking, req.user.id);
     }
 
     @UseGuards(AuthenticatedGuard)
     @Put('booking/delete')
     @HttpCode(202)
-    DeleteBooking(
+    deleteBooking(
         @Body() booking: BookRoom
     ) {
-        return this.roomBookingService.DeleteBooking(booking);
+        return this.roomBookingService.deleteBooking(booking);
     }
 
 
     @Post('rooms/filter/:hotelid')
     @HttpCode(200)
-    FilterRooms(
+    filterRoom(
         @Body() filter: RoomFilter,
         @Param('hotelid', ParseIntPipe) hotelid: number
     ) {
-        return this.roomBookingService.FilterRooms(filter, hotelid);
+        return this.roomBookingService.filterRooms(filter, hotelid);
     }
 }

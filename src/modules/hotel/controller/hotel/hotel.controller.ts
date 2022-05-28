@@ -10,20 +10,20 @@ export class HotelController {
     @UseGuards(AuthenticatedGuard)
     @Post('create')
     @HttpCode(201)
-    CreateHotel(@Body() hotel: CreateHotelDto) {
-        return this.hotelService.CreateHotel(hotel);
+    createHotel(@Body() hotel: CreateHotelDto) {
+        return this.hotelService.createHotel(hotel);
     }
 
     @Get('hotels')
     @HttpCode(202)
-    GetAllHotel(){
-        return this.hotelService.GetAllHotel();
+    getAllHotel(){
+        return this.hotelService.getAllHotel();
     }
 
     @Get(':id')
     @HttpCode(202)
-    GetOneHotel(@Param('id', ParseIntPipe) id: number) {
-        return this.hotelService.FindHotelById(id);
+    getOneHotel(@Param('id', ParseIntPipe) id: number) {
+        return this.hotelService.findHotelById(id);
     }
 
 }

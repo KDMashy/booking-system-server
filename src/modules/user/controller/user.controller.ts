@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from 'src/modules/auth/utils/guards/local.guard';
 import { RoomBookingsService } from 'src/modules/hotel/service/room-bookings/room-bookings.service';
 import { CreateUserDto } from '../dto/user.dto';
@@ -13,30 +13,28 @@ export class UserController {
 
     @Post('register')
     @HttpCode(201)
-    CreateUser(@Body() user: CreateUserDto){
-        return this.userService.CreateUser(user);
+    createUser(@Body() user: CreateUserDto){
+        return this.userService.createUser(user);
     }
 
     @UseGuards(AuthenticatedGuard)
     @Get('profile')
     @HttpCode(200)
-    GetUserProfile(@Req() req) {
-        return this.userService.GetProfile(req.user);
+    getUserProfile(@Req() req) {
+        return this.userService.getProfile(req.user);
     }
 
     @UseGuards(AuthenticatedGuard)
     @Get('bookings')
     @HttpCode(202)
-    GetUserBookingHistory(@Req() req) {
-        return this.bookingService.GetAllBookingByUser(req.user.id);
+    getUserBookingHistory(@Req() req) {
+        return this.bookingService.getAllBookingByUser(req.user.id);
     }
 
     @UseGuards(AuthenticatedGuard)
     @Delete('delete')
     @HttpCode(202)
-    DeleteUserById(
-        @Req() req,
-    ) {
-        return this.userService.DeleteUser(req.user.id);
+    deleteUserById(@Req() req,) {
+        return this.userService.deleteUser(req.user.id);
     }
 }

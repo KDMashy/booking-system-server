@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/modules/user/entity/user.entity';
 import { UserService } from 'src/modules/user/service/user.service';
-import { ComparePassword } from 'src/modules/utils/bcrypt';
+import { comparePassword } from 'src/modules/utils/bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -21,9 +21,9 @@ export class AuthService {
             };
             return user;
         }
-        const userDB = await this.userService.FindUserByName(username);
+        const userDB = await this.userService.findUserByName(username);
         if(userDB){
-            const matched = ComparePassword(password, userDB.password);
+            const matched = comparePassword(password, userDB.password);
             if (matched){
                 return userDB;
             }

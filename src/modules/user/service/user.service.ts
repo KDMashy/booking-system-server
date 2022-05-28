@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EncodePassword } from 'src/modules/utils/bcrypt';
+import { encodePassword } from 'src/modules/utils/bcrypt';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/user.dto';
 import { User } from '../entity/user.entity';
@@ -12,12 +12,13 @@ export class UserService {
         private userModel: Repository<User>,
     ) {}
 
-    async CreateUser(user: CreateUserDto) {
+    async createUser(user: CreateUserDto) {
         if (
             user.username.length > 0 &&
             user.email.length > 0 &&
             user.password.length > 0
         ){
+            //Keresés, létezik-e már
             const findUser = await this.userModel.findOne({ username: user.username});
             if (findUser){
                 throw new HttpException({
@@ -25,27 +26,35 @@ export class UserService {
                     status: HttpStatus.CONFLICT,
                 }, HttpStatus.CONFLICT);
             }
+
+            //Email Regex Check
             var emailRegex =  /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
             if(!emailRegex.test(user.email)){
                 throw new HttpException({
                     message: 'User email is not correct',
-                    status: HttpStatus.CONFLICT,
-                }, HttpStatus.CONFLICT);
+                    status: HttpStatus.BAD_REQUEST,
+                }, HttpStatus.BAD_REQUEST);
             }
+
+            //Password Regex check
             var passwRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
             if(!passwRegex.test(user.password)){
                 throw new HttpException({
                     message: `User password is not correct, should contain: uppercase letter,  lowercase letter, special case letter, digits, and minimum length of 8`,
-                    status: HttpStatus.CONFLICT,
-                }, HttpStatus.CONFLICT);
+                    status: HttpStatus.BAD_REQUEST,
+                }, HttpStatus.BAD_REQUEST);
             }
+
+            //Username validation
             if(user.username.length < 5){
                 throw new HttpException({
                     message: 'Username is not correct',
-                    status: HttpStatus.CONFLICT,
-                }, HttpStatus.CONFLICT);
+                    status: HttpStatus.BAD_REQUEST,
+                }, HttpStatus.BAD_REQUEST);
             }
-            const passw = EncodePassword(user.password);
+
+            //Create and Save user
+            const passw = encodePassword(user.password);
             const newUser = await this.userModel.create({
                 username: user.username,
                 email: user.email,
@@ -56,12 +65,12 @@ export class UserService {
         } else {
             throw new HttpException({
                 message: 'Missing fields from user registration',
-                status: HttpStatus.CONFLICT,
-            }, HttpStatus.CONFLICT);
+                status: HttpStatus.BAD_REQUEST,
+            }, HttpStatus.BAD_REQUEST);
         }
     }
 
-    async DeleteUser(id: number){
+    async deleteUser(id: number){
         try{
             await this.userModel
                 .createQueryBuilder()
@@ -75,19 +84,19 @@ export class UserService {
         }
     }
 
-    async GetUsers() {
+    async getUsers() {
         return this.userModel.find();
     }
 
-    async FindUserByName(username: string): Promise<User>{
+    async findUserByName(username: string): Promise<User>{
         return this.userModel.findOne({ username });
     }
 
-    async FindUserById(id: number) {
+    async findUserById(id: number) {
         return this.userModel.findOne(id);
     }
 
-    GetProfile(user: User){
+    getProfile(user: User){
         var serialized = {
             id: user.id,
             username: user.username,

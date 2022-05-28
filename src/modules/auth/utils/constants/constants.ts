@@ -1,3 +1,3 @@
-export const jwtConstants = {
-    secret: 'DefinietlyNotASecretKeyAgainFromNoWhere',
-};
+export default () => ({
+    secret: process.env.JWT_SECRET
+});

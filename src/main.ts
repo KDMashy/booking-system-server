@@ -10,8 +10,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const sessionRepository = getRepository(SessionEntity);
   app.use(session({
-    name: 'BOOKING_SYSTEM_SESSION',
-    secret: 'DefinietlyNotABookingServerSessionSecretThisIS',
+    name: process.env.SESSION_NAME,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -21,6 +21,6 @@ async function bootstrap() {
   }));
   app.use(passport.initialize());
   app.use(passport.session());
-  await app.listen(3000);
+  await app.listen(parseInt(process.env.PORT, 10) || 3000,);
 }
 bootstrap();

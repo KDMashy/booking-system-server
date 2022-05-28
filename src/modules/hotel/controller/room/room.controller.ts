@@ -10,19 +10,19 @@ export class RoomController {
     @UseGuards(AuthenticatedGuard)
     @Post('room/create')
     @HttpCode(201)
-    CreateRoom(@Body() room: CreateRoomDto) {
-        return this.roomService.CreateRoom(room);
+    createRoom(@Body() room: CreateRoomDto) {
+        return this.roomService.createRoom(room);
     }
 
     @Get('room/:id')
     @HttpCode(202)
-    GetAllRoomByHotel(@Param('id', ParseIntPipe) hotelid: number) {
-        return this.roomService.GetAllRoomsByHotelId(hotelid);
+    getAllRoomsByHotelId(@Param('id', ParseIntPipe) hotelid: number) {
+        return this.roomService.getAllRoomsByHotelId(hotelid);
     }
 
     @Get('rooms/:id')
     @HttpCode(202)
-    GetOneRoomByHotel(@Param('id', ParseIntPipe) id: number) {
-        return this.roomService.GetRoomById(id);
+    getOneRoomById(@Param('id', ParseIntPipe) id: number) {
+        return this.roomService.getRoomById(id);
     }
 }

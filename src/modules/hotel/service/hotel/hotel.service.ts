@@ -11,7 +11,7 @@ export class HotelService {
         private hotelModel: Repository<Hotel>,
     ) {}
 
-    async CreateHotel(hotel: CreateHotelDto) {
+    async createHotel(hotel: CreateHotelDto) {
         if(
             hotel.name.length > 0 &&
             hotel.address.length > 0 &&
@@ -30,12 +30,12 @@ export class HotelService {
         } else {
             throw new HttpException({
                 message: 'Hotel cant be created, invalid input',
-                status: HttpStatus.CONFLICT,
-            }, HttpStatus.CONFLICT);
+                status: HttpStatus.BAD_REQUEST,
+            }, HttpStatus.BAD_REQUEST);
         }
     }
 
-    async DeleteHotelById(hotelid: number){
+    async deleteHotelById(hotelid: number){
         try{
             await this.hotelModel.delete(hotelid);
             return HttpStatus.OK;
@@ -44,11 +44,11 @@ export class HotelService {
         }
     }
 
-    async GetAllHotel(){
+    async getAllHotel(){
         return await this.hotelModel.find();
     }
 
-    async FindHotelById(id: number){
+    async findHotelById(id: number){
         const findHotel = await this.hotelModel.findOne({ id: id });
         if (!findHotel) {
             throw new HttpException({
@@ -59,7 +59,7 @@ export class HotelService {
         return findHotel 
     }
 
-    async FindHotelByName(name: string){
+    async findHGotelByName(name: string){
         try {
             return await this.hotelModel.findOne({ name: name });
         } catch (err){

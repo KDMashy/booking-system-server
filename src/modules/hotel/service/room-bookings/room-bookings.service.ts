@@ -17,18 +17,31 @@ export class RoomBookingsService {
         private hotelService: HotelService
     ) {}
 
-    async CreateBooking(book: CreateBookDto, userid: number){
-        const findRoom = await this.roomService.GetRoomById(book.roomid);
+    async createBooking(book: CreateBookDto, userid: number){
+        //Létezik-e a szoba
+        const findRoom = await this.roomService.getRoomById(book.roomid);
         if (!findRoom) {
             throw new HttpException({
                 message: 'Room does not exist',
-                status: HttpStatus.CONFLICT,
-            }, HttpStatus.CONFLICT);
+                status: HttpStatus.BAD_REQUEST,
+            }, HttpStatus.BAD_REQUEST);
         }
+
+        //Alap dátumok beállítása
         const current = new Date();
         const fromD = new Date(book.fromdate);
         const toD = new Date(book.expiration);
-        const checkIfAvailable = await this.CheckIntervalAvailable(findRoom.id, fromD, toD);
+        const checkIfAvailable = await this.checkIntervalAvailable(findRoom.id, fromD, toD);
+
+        //Megfelelő dátum lett-e megadva
+        if (isNaN(fromD.getTime()) || isNaN(toD.getTime())){
+            throw new HttpException({
+                message: 'Invalid date given',
+                status: HttpStatus.BAD_REQUEST,
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        //Ellenőrzés, le van-e akkorra már foglalva
         if (
             current > fromD ||
             current.getTime() === fromD.getTime() ||
@@ -43,13 +56,9 @@ export class RoomBookingsService {
                 status: HttpStatus.CONFLICT,
             }, HttpStatus.CONFLICT);
         }
-        if (isNaN(fromD.getTime()) || isNaN(toD.getTime())){
-            throw new HttpException({
-                message: 'Invalid date given',
-                status: HttpStatus.CONFLICT,
-            }, HttpStatus.CONFLICT);
-        }
-        const findHotel = await this.hotelService.FindHotelById(findRoom.hotelid);
+
+        //Ha minden megfelel, mentés
+        const findHotel = await this.hotelService.findHotelById(findRoom.hotelid);
         book.hotelid = findHotel.id;
         book.fromdate = fromD;
         book.expiration = toD;
@@ -59,10 +68,11 @@ export class RoomBookingsService {
         book.userid = userid;
         const booking = await this.bookModel.create(book);
         booking.save();
+
         return booking;
     }
 
-    async DeleteBooking(booking: BookRoom){
+    async deleteBooking(booking: BookRoom){
         try{
             await this.bookModel
                 .createQueryBuilder()
@@ -78,11 +88,11 @@ export class RoomBookingsService {
         }
     }
 
-    async GetActiveBookingByUser(userid: number){
+    async getActiveBookingByUser(userid: number){
         return await this.bookModel.find({ where: { userid: userid, reserved: 1 }})
     }
 
-    async GetAllBookingByUser(userid: number){
+    async getAllBookingByUser(userid: number){
         try {
             var history: RoomBooking[] = await this.bookModel.find({
                 where: {userid: userid},
@@ -90,11 +100,11 @@ export class RoomBookingsService {
             });
             return history;
         } catch(err){
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.CONFLICT;
         }
     }
 
-    async CheckIntervalAvailable(roomid: number, fromdate: Date, expires: Date){
+    async checkIntervalAvailable(roomid: number, fromdate: Date, expires: Date){
         try {
             var bookings: BookRoom[] = await this.bookModel.find({ 
                 where: {roomid: roomid},
@@ -129,9 +139,9 @@ export class RoomBookingsService {
         
     }
 
-    async FilterRooms(filter: RoomFilter, hotelid: number){
+    async filterRooms(filter: RoomFilter, hotelid: number){
         try{
-            const rooms: Room[] = await this.roomService.GetAllRoomsByHotelId(hotelid);
+            const rooms: Room[] = await this.roomService.getAllRoomsByHotelId(hotelid);
             var popped: boolean = false;
             for (let i = 0; i < rooms.length; i++) {
                 if(filter.maxprice && filter.maxprice < rooms[i].price){
@@ -142,7 +152,7 @@ export class RoomBookingsService {
                     !isNaN(new Date(filter.fromdate).getTime()) && !isNaN(new Date(filter.untildate).getTime()) &&
                     popped == false
                 ){
-                    const reservedRoom = await this.CheckIntervalAvailable(
+                    const reservedRoom = await this.checkIntervalAvailable(
                         rooms[i].id,
                         new Date(filter.fromdate),
                         new Date(filter.untildate) 
@@ -155,7 +165,7 @@ export class RoomBookingsService {
                 if(filter.available == true && popped == false){
                     var tomorrowDate = new Date();
                     tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-                    const reservedRoom = await this.CheckIntervalAvailable(
+                    const reservedRoom = await this.checkIntervalAvailable(
                         rooms[i].id,
                         new Date(),
                         tomorrowDate

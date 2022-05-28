@@ -13,13 +13,14 @@ export class RoomService {
         private hotelService: HotelService,
     ) {}
 
-    async CreateRoom(room: CreateRoomDto) {
+    async createRoom(room: CreateRoomDto) {
         if(
             room.description.length > 0 &&
             room.price > 0 &&
             room.roomnumber.length > 0 &&
             room.roomtype.length > 0
         ){
+            //Létezik-e már ilyen szoba
             const findRoom = await this.roomModel.findOne({ roomnumber: room.roomnumber });
             if (findRoom) {
                 throw new HttpException({
@@ -27,26 +28,30 @@ export class RoomService {
                     status: HttpStatus.CONFLICT,
                 }, HttpStatus.CONFLICT);
             }
-            const findHotel = await this.hotelService.FindHotelById(room.hotelid); 
+
+            //Létezik-e a hotel
+            const findHotel = await this.hotelService.findHotelById(room.hotelid); 
             if (!findHotel){
                 throw new HttpException({
                     message: 'Hotel does not exist',
-                    status: HttpStatus.CONFLICT,
-                }, HttpStatus.CONFLICT);
+                    status: HttpStatus.BAD_REQUEST,
+                }, HttpStatus.BAD_REQUEST);
             }
+
+            //Mentés
             const newRoom = await this.roomModel.create( room );
             newRoom.save();
             return HttpStatus.CREATED;
         } else {
             throw new HttpException({
                 message: 'Room cant be created, invalid data given',
-                status: HttpStatus.CONFLICT,
-            }, HttpStatus.CONFLICT);
+                status: HttpStatus.BAD_REQUEST,
+            }, HttpStatus.BAD_REQUEST);
         }
     }
 
-    async GetAllRoomsByHotelId(hotelId: number){
-        const findHotel = await this.hotelService.FindHotelById(hotelId);
+    async getAllRoomsByHotelId(hotelId: number){
+        const findHotel = await this.hotelService.findHotelById(hotelId);
         if (!findHotel){
             throw new HttpException({
                 message: 'Hotel does not exist',
@@ -57,7 +62,7 @@ export class RoomService {
         return rooms;
     }
 
-    async GetRoomById(id: number){
+    async getRoomById(id: number){
         const findRoom = await this.roomModel.findOne({ id: id });
         if (!findRoom) {
             throw new HttpException({
